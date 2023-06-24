@@ -1,24 +1,66 @@
 const blogRouter = require('express').Router()
 const {Blog} = require('../models/blog')
+const User = require('../models/user')
 
-blogRouter.get('/', (request, response, next) => {
-    Blog
+blogRouter.get('/', async (request, response, next) => {
+    try {
+        const blogs = await Blog
         .find({})
-        .then(blogs => {
+        .populate('user', { username: 1, name: 1 }, "User")
         response.json(blogs)
-        })
-        .catch(error => next(error))
+    } catch(exception) {
+        next(exception)
+    }
 })
   
-blogRouter.post('/', (request, response, next) => {
-    const blog = new Blog(request.body)
+blogRouter.post('/', async (request, response, next) => {
+    const body = request.body
 
-    blog
-        .save()
-        .then(result => {
-        response.status(201).json(result)
-        })
-        .catch(error => next(error))
+    // find associated user
+    let user = await User.find({})
+    user = user[0]
+
+    const blog = new Blog({
+        ...body,
+        user: user.id
+    })
+    blog.likes = blog.likes === undefined ? 0 : blog.likes
+
+    try {
+        const savedBlog = await blog.save()
+        user.blogs = user.blogs.concat(savedBlog._id)
+        await user.save()
+        response.status(201).json(savedBlog)
+    } catch(exception) {
+        next(exception)
+    }
+})
+
+blogRouter.delete('/:id', async (request, response, next) => {
+    try {
+        const response = await Blog.findByIdAndDelete(request.params.id)
+        response.status(200).end()
+    } catch(error) {
+        next(error)
+    }
+})
+
+blogRouter.put('/:id', async (request, response, next) => {
+    const body = request.body
+
+    const updatedBlog = {
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes
+    }
+
+    try {
+        await Blog.findByIdAndUpdate(request.params.id, updatedBlog, { new: true })
+        response.status(200).send(updatedBlog)
+    } catch(exception) {
+        next(exception)
+    }
 })
 
 module.exports = blogRouter
