@@ -1,0 +1,19 @@
+GET http://localhost:3003/api/blogs
+
+###
+
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY0OTZjYzFhYzhhZThiNzZiOGZmMjY0YSIsImlhdCI6MTY4NzY5MTA3NX0.8cjXgT44Vsk_WHpSGsHV_f-4Darn1z2Ptic7yNWUT40
+
+{
+    "title":"Second Post",
+    "author":"Garrett Andrews",
+    "url":"google.com",
+    "likes":420
+}
+
+###
+
+DELETE http://localhost:3003/api/blogs/64982d6a3b28da3119c0628a
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY0OTZjYzFhYzhhZThiNzZiOGZmMjY0YSIsImlhdCI6MTY4NzY5MTA3NX0.8cjXgT44Vsk_WHpSGsHV_f-4Darn1z2Ptic7yNWUT40
